@@ -1,7 +1,6 @@
-import fileUrl from 'file-url'
 import serialize from 'serialize-javascript'
 
-import { addTemplate, createResolver, defineNuxtModule } from '@nuxt/kit'
+import { createResolver, defineNuxtModule } from '@nuxt/kit'
 
 import pkg from '../package.json'
 
@@ -32,12 +31,7 @@ export default defineNuxtModule<FeedmeModuleOptions>({
   setup(options, nuxt) {
     const resolver = createResolver(import.meta.url)
 
-    const feedme = addTemplate({
-      filename: 'feedme.mjs',
-      write: true,
-      getContents: () => `export default ${JSON.stringify({ module: serialize(options) })}`,
-    })
-    nuxt.options.alias['#feedme'] = fileUrl(feedme.dst)
+    nuxt.options.runtimeConfig.feedme = serialize(options)
 
     nuxt.hook('nitro:config', (config) => {
       for (const route in options.feeds) {
